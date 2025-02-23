@@ -5,14 +5,14 @@ from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
 # Import data (Make sure to parse dates. Consider setting index column to 'date'.)
-df = pd.read_csv("fcc-forum-pageviews.csv", index_col="date")
+df = pd.read_csv("fcc-forum-pageviews.csv", parse_dates=['date'], index_col="date")
 
 # Clean data
-df = df[(df["value"] / df["value"].sum() * 100 < 0.975) & (df["value"] / df["value"].sum() * 100 > 0.025)]
-print(df.head())
+df = df[(df["value"] <= df["value"].quantile(0.975)) & (df["value"] >= df["value"].quantile(0.025))]
+
 def draw_line_plot():
     # Draw line plot
-    fig, ax = plt.subplots(figsize=(12, 6))
+    fig, ax = plt.subplots(figsize=(18, 6))
     ax.plot(df.index, df["value"], color='tab:red')
     ax.set_xlabel("Date")
     ax.set_ylabel("Page Views")
